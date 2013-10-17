@@ -9,4 +9,19 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Suggestotron::Application.config.secret_key_base = '6fac15f7ce2a5e718995d8957b991496259f6d0a3cd5b5fc1f947c3aa78ad49b434c1734bd45d6c123ac1f02f1503986f8452cbe8eb831befc2b550d3c3e5cb3'
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+Suggestotron::Application.config.secret_key_base = secure_token
